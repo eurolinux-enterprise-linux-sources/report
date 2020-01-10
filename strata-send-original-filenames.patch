@@ -1,0 +1,308 @@
+
+Somewhat altered version of
+From 3f007a9c237b8bc3f25cd857092692b0557236e7 Mon Sep 17 00:00:00 2001
+  changed so that it would apply cleanly.
+
+From: Gavin Romig-Koch <gavin@redhat.com>
+Date: Wed, 26 Jan 2011 12:49:39 -0500
+Subject: [PATCH] Allow Strata plugin to send original filenames from report to server (Fedora 635118)(RHEL 626994)
+
+diff -up report-0.18/python/report/plugins/strata/__init__.py.strata report-0.18/python/report/plugins/strata/__init__.py
+--- report-0.18/python/report/plugins/strata/__init__.py.strata	2011-02-18 17:23:55.748392016 -0500
++++ report-0.18/python/report/plugins/strata/__init__.py	2011-02-18 17:23:55.761392419 -0500
+@@ -62,21 +62,22 @@ def report(signature, io, optionsDict):
+                            _("No io provided."))
+         return False
+ 
+-    filename_list = []
++    file_list = []
+     if signature.has_key("simpleFile"):
+-        filename_list.append(signature["simpleFile"].asFileName())
++        file_list.append((signature["simpleFile"].asFileName(),
++                          signature["simpleFile"].fileName))
+ 
+     else:
+-        filename = reportmodule.serializeAsSignature(signature)
+-        if filename is None:
++        filelocation = reportmodule.serializeAsSignature(signature)
++        if filelocation is None:
+             return None
+-        elif filename is False:
++        elif filelocation is False:
+             return False
+ 
+-        filename_list.append(filename)
++        file_list.append((filelocation,"report.xml"))
+         for (key,value) in signature.iteritems():
+             if value.isBinary:
+-                filename_list.append(value.asFileName())
++                file_list.append((value.asFileName(),value.fileName))
+ 
+     if 'component' in signature:
+         component = signature['component'].asString()
+@@ -168,6 +169,7 @@ def report(signature, io, optionsDict):
+             if len(good_versions) > 0 and version not in good_versions:
+                 version = good_versions[0]
+ 
++        (filelocation,filename) = file_list[0]
+         response = send_report_to_new_case(URL,
+                                            cert_data,
+                                            loginResult['username'], 
+@@ -176,7 +178,10 @@ def report(signature, io, optionsDict):
+                                            component, 
+                                            product,
+                                            version,
+-                                           filename_list[0])
++                                           None,
++                                           filename,
++                                           filelocation)
++
+         if not response:
+             DisplayFailMessage(io, _("Case Creation Failed"), strata_client_strerror())
+             return False
+@@ -196,11 +201,15 @@ def report(signature, io, optionsDict):
+             if case_number is None:
+                 return None
+ 
++        (filelocation,filename) = file_list[0]
+         response = send_report_to_existing_case(URL,
+                                                 cert_data,
+                                                 loginResult['username'], 
+                                                 loginResult['password'],
+-                                                case_number, filename_list[0])
++                                                case_number, 
++                                                None,
++                                                filename,
++                                                filelocation)
+         
+         if not response:
+             DisplayFailMessage(io, _("Report Attachement Failed"), strata_client_strerror())
+@@ -232,7 +241,7 @@ def report(signature, io, optionsDict):
+     else:
+         body = response
+ 
+-    if len(filename_list) > 1 and not case_number and actualURL:
++    if len(file_list) > 1 and not case_number and actualURL:
+         leading = actualURL
+         sep = '/'
+         trailing = ''
+@@ -241,14 +250,16 @@ def report(signature, io, optionsDict):
+         if trailing:
+             case_number = trailing
+ 
+-    if case_number and len(filename_list) > 1:
+-        for filename in filename_list[1:]:
++    if case_number and len(file_list) > 1:
++        for (filelocation,filename) in file_list[1:]:
+             response = send_report_to_existing_case(URL,
+                                                     cert_data,
+                                                     loginResult['username'], 
+                                                     loginResult['password'],
+-                                                    case_number, 
+-                                                    filename);
++                                                    case_number,
++                                                    None,
++                                                    filename, 
++                                                    filelocation);
+         
+             if response:
+                 try:
+diff -up report-0.18/python/report/plugins/strata/strata.py.strata report-0.18/python/report/plugins/strata/strata.py
+--- report-0.18/python/report/plugins/strata/strata.py.strata	2011-02-18 17:23:55.736422593 -0500
++++ report-0.18/python/report/plugins/strata/strata.py	2011-02-18 17:23:55.762391696 -0500
+@@ -7,11 +7,11 @@ post_signature.argtypes = [ c_char_p, c_
+ post_signature.restype = c_char_p
+ 
+ send_report_to_new_case = strata_client_lib.send_report_to_new_case
+-send_report_to_new_case.argtypes = [ c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p ]
++send_report_to_new_case.argtypes = [ c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p ]
+ send_report_to_new_case.restype = c_char_p
+ 
+ send_report_to_existing_case = strata_client_lib.send_report_to_existing_case
+-send_report_to_existing_case.argtypes = [ c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p ]
++send_report_to_existing_case.argtypes = [ c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p ]
+ send_report_to_existing_case.restype = c_char_p
+ 
+ strata_client_strerror = strata_client_lib.strata_client_strerror
+diff -up report-0.18/strata_client/c_strata_client_test.c.strata report-0.18/strata_client/c_strata_client_test.c
+--- report-0.18/strata_client/c_strata_client_test.c.strata	2011-02-18 17:23:55.737414903 -0500
++++ report-0.18/strata_client/c_strata_client_test.c	2011-02-18 17:23:55.762391696 -0500
+@@ -63,7 +63,7 @@ main(int argc, char** argv) {
+   }
+ 
+   printf("\ncreate_case(dummy_summary, dummy_description, sealert-report.xml):\n");
+-  p = send_report_to_new_case(baseURL, NULL, "dummyUser", "dummyPassword", "c_strata_client_created test case summary", "c_strata_client_created test case description", "c_strata_client_created test case component", "Red Hat Enterprise Linux", "6.0", "sealert-report.xml");
++  p = send_report_to_new_case(baseURL, NULL, "dummyUser", "dummyPassword", "c_strata_client_created test case summary", "c_strata_client_created test case description", "c_strata_client_created test case component", "Red Hat Enterprise Linux", "6.0", "text/xml", "sealert-report.xml", "sealert-report.xml");
+   if (p) {
+     printf("%s\n", p );
+     free((void*)p);
+diff -up report-0.18/strata_client/strata_client.h.strata report-0.18/strata_client/strata_client.h
+--- report-0.18/strata_client/strata_client.h.strata	2011-02-18 17:23:55.737414903 -0500
++++ report-0.18/strata_client/strata_client.h	2011-02-18 17:23:55.763391695 -0500
+@@ -43,13 +43,17 @@ const char* send_report_to_new_case( con
+                                      const char* _description, 
+                                      const char* _component, 
+                                      const char* _product, 
+-                                     const char* _version, 
++                                     const char* _version,
++				     const char* _content_type,
++				     const char* _content_name,
+                                      const char* _report_file_name );
+ const char* send_report_to_existing_case( const char* baseURL, 
+ 					  const char* _cert_data,
+                                           const char* _username,
+                                           const char* _password,
+                                           const char* _case_name, 
++					  const char* _content_type,
++					  const char* _content_name,
+                                           const char* _report_file_name );
+ 
+ #ifdef __cplusplus 
+diff -up report-0.18/strata_client/strata_client_lib.c.strata report-0.18/strata_client/strata_client_lib.c
+--- report-0.18/strata_client/strata_client_lib.c.strata	2011-02-18 17:23:55.755391580 -0500
++++ report-0.18/strata_client/strata_client_lib.c	2011-02-19 09:45:02.646407711 -0500
+@@ -793,6 +793,7 @@ append_accept_header(struct curl_slist *
+ // URL: to post to
+ //
+ // content_type: of the data
++// content_name: only used if data_size = -3
+ // data: depends on data_size
+ //   if data_size is 0 or more
+ //      data is binary data to be sent in post
+@@ -803,6 +804,7 @@ append_accept_header(struct curl_slist *
+ //   if data_size == -3 
+ //      data is name of file whose contents are to be sent in post
+ //      the file is sent as a multipart/form-data post
++//      content_name (if not null) is the name to use for the file
+ //
+ 
+ 
+@@ -812,6 +814,7 @@ post(const char* URL,
+      const char* username,
+      const char* password,
+      const char* content_type,
++     const char* content_name,
+      const char* data,
+      const long data_size) {
+ 
+@@ -892,6 +895,9 @@ post(const char* URL,
+     }
+   }
+ 
++  if (content_type == NULL)
++    content_type = "application/binary";
++
+   FILE* data_file = 0;
+   struct curl_httppost* post = NULL;  
+   struct curl_httppost* last = NULL;  
+@@ -909,11 +915,13 @@ post(const char* URL,
+     }
+ 
+   } else if (data_size == -3) {
++    if (content_name == NULL) 
++      content_name = data;
+     rc = curl_formadd(&post, &last, 
+                       CURLFORM_PTRNAME, "file", 
+                       CURLFORM_FILE, data, 
+                       CURLFORM_CONTENTTYPE, content_type,
+-                      CURLFORM_FILENAME, data,
++                      CURLFORM_FILENAME, content_name,
+                       CURLFORM_END);
+     if (rc) {
+       internal_error_curl(rc, "problem", "curl_formadd(CURLFORM_FILE)");
+@@ -1005,7 +1013,7 @@ post_string(const char* URL,
+             const char* password,
+             const char* content_type,
+             const char* str) {
+-  return post(URL, cert_data, username, password, content_type, str, -1);
++  return post(URL, cert_data, username, password, content_type, NULL, str, -1);
+ }
+ 
+ static response_data_t* 
+@@ -1031,7 +1039,7 @@ post_memory(const char* URL,
+   }
+ 
+   return post(URL, cert_data, 
+-	      username, password, content_type, data, data_size);
++	      username, password, content_type, NULL, data, data_size);
+ }
+ 
+ static response_data_t* 
+@@ -1049,7 +1057,7 @@ post_namedfile(const char* URL,
+                const char* password,
+                const char* content_type,
+                const char* namedfile) {
+-  return post(URL, cert_data, username, password, content_type, namedfile, -2);
++  return post(URL, cert_data, username, password, content_type, NULL, namedfile, -2);
+ }
+ 
+ static response_data_t* 
+@@ -1058,8 +1066,11 @@ postform_namedfile(const char* URL,
+                    const char* username,
+                    const char* password,
+                    const char* content_type,
++                   const char* content_name,
+                    const char* namedfile) {
+-  return post(URL, cert_data, username, password, content_type, namedfile, -3);
++  return post(URL, cert_data, username, password, 
++	      content_type, content_name, 
++	      namedfile, -3);
+ }
+ 
+ 
+@@ -1753,6 +1764,8 @@ attach_file_to_case( const char* baseURL
+                      const char* username,
+                      const char* password,
+                      const char* case_name,
++		     const char* content_type,
++		     const char* content_name,
+                      const char* report_file_name ) {
+ 
+   const char* attachURL;
+@@ -1782,7 +1795,8 @@ attach_file_to_case( const char* baseURL
+   response_data_t* attach_response = 
+     postform_namedfile(attachURL, cert_data,
+                        username, password,
+-                       "application/binary", 
++                       content_type,
++		       content_name,
+                        report_file_name);
+   if (!attach_response) return NULL;
+   
+@@ -1912,6 +1926,8 @@ send_report_to_new_case( const char* bas
+                          const char* component,
+                          const char* product,
+                          const char* version,
++			 const char* content_type,
++			 const char* content_name,
+                          const char* report_file_name ) {
+ 
+   const char* case_data = make_case_data(summary, description,
+@@ -1938,6 +1954,8 @@ send_report_to_new_case( const char* bas
+         attach_file_to_case(createcase_response->location, cert_data, 
+                             username, password,
+                             NULL,
++			    content_type,
++			    content_name,			    
+                             report_file_name);
+       if (!attach_response) return NULL;
+       retval = make_response("Case Creation", "File Attachment",
+@@ -1970,12 +1988,17 @@ send_report_to_existing_case( const char
+                               const char* username,
+                               const char* password,
+                               const char* case_name,
++			      const char* content_type,
++			      const char* content_name,
+                               const char* report_file_name ) {
+ 
+   response_data_t* attach_response = 
+     attach_file_to_case(baseURL, cert_data, 
+                         username, password, 
+-                        case_name, report_file_name);
++                        case_name,
++                        content_type, 
++                        content_name,
++                        report_file_name);
+ 
+   if (!attach_response) return NULL;
+   

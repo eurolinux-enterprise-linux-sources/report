@@ -78,7 +78,7 @@
 
 Name:           report
 Version:        0.18
-Release:        7.sl6
+Release:        9.sl6
 Summary:        Incident reporting library
 
 Group:          System Environment/Libraries
@@ -100,6 +100,8 @@ Patch11: GTKIO-success-dialog.patch
 Patch12: remove-http-headers-from-user-display.patch
 Patch14: correct-target-order.patch
 Patch15: correct-how-we-are-gathering-Product-and-Version-inf.patch
+Patch16: honor-the-options-in-main-RHEL-624676-Fedora-635107.patch
+Patch17: strata-send-original-filenames.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -160,7 +162,7 @@ Summary:        GTK IO for reporting library
 Group:          System Environment/Libraries
 
 Requires: pygtk2
-Requires: report = %{version}-%{release}
+Requires: report%{?_isa} = %{version}-%{release}
 
 %description gtk
 Provides GTK IO dialogs for the reporting library
@@ -170,7 +172,7 @@ Summary:        Newt IO for reporting library
 Group:          System Environment/Libraries
 
 Requires: newt-python
-Requires: report = %{version}-%{release}
+Requires: report%{?_isa} = %{version}-%{release}
 
 %description newt
 Provides Newt IO dialogs for the reporting library
@@ -181,7 +183,7 @@ Provides Newt IO dialogs for the reporting library
 Summary:        Plugin template reporter to RHEL
 Group:          System Environment/Libraries
 
-Requires: report = %{version}-%{release}
+Requires: report%{?_isa} = %{version}-%{release}
 Requires: rpm-python
 %if 0%{?obsolete_old_RHEL}
 Obsoletes: report-plugin-RHEL
@@ -195,7 +197,7 @@ Plugin template reporter to bugzilla within RHEL
 Summary:        Plugin template reporter to bugzilla
 Group:          System Environment/Libraries
 
-Requires: report = %{version}-%{release}
+Requires: report%{?_isa} = %{version}-%{release}
 Requires: rpm-python
 Requires: python-bugzilla
 
@@ -208,7 +210,7 @@ Plugin template reporter to bugzilla
 Summary:        Plugin template reporter to ftp
 Group:          System Environment/Libraries
 
-Requires: report = %{version}-%{release}
+Requires: report%{?_isa} = %{version}-%{release}
 
 %description plugin-ftp
 Plugin template reporter to ftp
@@ -216,7 +218,7 @@ Plugin template reporter to ftp
 %package plugin-scp
 Summary:        Plugin template reporter to scp
 Group:          System Environment/Libraries
-Requires: report = %{version}-%{release}
+Requires: report%{?_isa} = %{version}-%{release}
 
 %description plugin-scp
 Plugin template reporter to scp
@@ -224,7 +226,7 @@ Plugin template reporter to scp
 %package plugin-localsave
 Summary:        Plugin template reporter to local directory
 Group:          System Environment/Libraries
-Requires: report = %{version}-%{release}
+Requires: report%{?_isa} = %{version}-%{release}
 
 %description plugin-localsave
 Plugin template reporter to localsave
@@ -296,6 +298,8 @@ Config for reporter to bugzilla.redhat.com
 %patch12 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
+%patch17 -p1 -z .strata
 
 %build
 %configure
@@ -431,10 +435,18 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Jan 07 2011 Troy Dawson <dawson@fnal.gov> 0.18-7.sl6
+* Wed Jun 22 2011 Troy Dawson <dawson@fnal.gov> 0.18-9.sl6
 - Removed options to send reports to RedHat or Bugzilla
 -- set "%define build_as_for_rhel" to 0
 -- set "%define bugzilla" to 0
+
+* Sat Feb 19 2011 Gavin Romig-Koch <gavin@redhat.com> 0.18-9
+- Correct the patch for Allow Strata plugin to send original filenames from report to server (RHEL 626994)
+
+* Thu Jan 23 2011 Gavin Romig-Koch <gavin@redhat.com> 0.18-8
+- honor the options in [main]  (RHEL 624676) (Fedora 635107)
+- Allow Strata plugin to send original filenames from report to server (Fedora 635118)(RHEL 626994)
+-  add _isa macro to spec file. (RHEL 672647)(Fedora 670215)
 
 * Mon Aug 20 2010 Gavin Romig-Koch <gavin@redhat.com> 0.18-7
 - correct how we are gathering Product and Version information (RHEL 625109)

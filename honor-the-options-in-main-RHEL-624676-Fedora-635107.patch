@@ -1,0 +1,34 @@
+From e7117986015ecfc748b615cb0b0d99f6e3e71899 Mon Sep 17 00:00:00 2001
+From: Gavin Romig-Koch <gavin@redhat.com>
+Date: Tue, 18 Jan 2011 14:42:26 -0500
+Subject: [PATCH] honor the options in [main]  (RHEL 624676) (Fedora 635107)
+
+---
+ python/report/__init__.py |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+diff --git a/python/report/__init__.py b/python/report/__init__.py
+index 9e34bb2..36a27c3 100644
+--- a/python/report/__init__.py
++++ b/python/report/__init__.py
+@@ -386,12 +386,16 @@ def buildChoices(signature, io, config, rptopts):
+         if modulefile:
+             modulefile.close()
+ 
++    optionsDictStart = {}
++
+     config_sections = config.sections()
+     if "main" in config_sections:
++        for eachOption in config.options("main"):
++            optionsDictStart[eachOption] = config.get("main",eachOption)
+         config_sections.remove("main")
+         
+     for eachSection in config_sections:
+-        optionsDict = {}
++        optionsDict = optionsDictStart.copy()
+         for eachOption in config.options(eachSection):
+             optionsDict[eachOption] = config.get(eachSection,eachOption)
+ 
+-- 
+1.7.3.4
+
