@@ -1,0 +1,11 @@
+STRATAHOST=support-services-devel.gss.redhat.com:8080
+
+headerfile=/tmp/strata-headers-$$
+outfile=/tmp/strata-output-$$
+
+curl --silent --show-error -X POST -H'Content-Type: application/xml' -H'Accept: application/xml' --data-binary @$1 http://${STRATAHOST}/Strata/signatures >${outfile} -D $headerfile 
+
+./showOutfile ${outfile} ${headerfile}
+
+
+

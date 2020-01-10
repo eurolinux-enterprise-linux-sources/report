@@ -1,0 +1,44 @@
+STRATAHOST=support-services-devel.gss.redhat.com:8080
+#STRATAHOST=access.redhat.com
+
+summary=$1
+description=$2
+component=$3
+
+product="Red Hat Enterprise Linux"
+version="6.0"
+
+#case_data="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><case xmlns=\"http://www.redhat.com/gss/strata\"><summary>${summary}</summary><description>${description}</description></case>"
+
+case_data="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><case xmlns=\"http://www.redhat.com/gss/strata\">"
+
+if [ -n "${summary}" ] ; then 
+   case_data="${case_data}<summary>${summary}</summary>"
+fi
+
+if [ -n "${description}" ] ; then 
+   case_data="${case_data}<description>${description}</description>"
+fi
+
+if [ -n "${product}" ] ; then 
+   case_data="${case_data}<product>${product}</product>"
+fi
+
+if [ -n "${version}" ] ; then 
+   case_data="${case_data}<version>${version}</version>"
+fi
+
+if [ -n "${component}" ] ; then 
+   case_data="${case_data}<component>${component}</component>"
+fi
+
+case_data="${case_data}</case>"
+
+headerfile=/tmp/strata-headers-$$
+outfile=/tmp/strata-output-$$
+
+curl --silent --show-error -X POST -H'Content-Type: application/xml' --data "${case_data}" http://${STRATAHOST}/Strata/cases -D $headerfile >${outfile} 
+
+./showOutfile ${outfile} ${headerfile}
+
+

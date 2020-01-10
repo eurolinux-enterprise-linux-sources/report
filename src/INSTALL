@@ -1,0 +1,59 @@
+
+To build this package you will need the GNU autotools and GNU make
+  installed.
+
+To locally build a set of RPMs, type (in this directory):
+
+    make rpm
+
+  This will build a bunch of RPMs in a subdirectory of "RPMS".
+
+To use mock to build the RPMs, type:
+
+    make mock-fedora-12-i386
+
+  or
+
+     make mock-fedora-12-x86_64
+
+  This will mock build a set of RPMs in a subdirectory of "MOCK".
+
+Several different versions of Fedora and different architectures are
+  provided.  (If the one you need isn't, edit "makefile.am", copy an
+  existing "mock-xxx" rule, change what needs changing...)
+
+The make-files provided by this package will automatically run
+  autoreconf, and ./configure, if they have not already been run.
+  You can run them by hand, but you don't have to.
+
+It is also possible to build and install directly without going
+  through RPM.  Type:
+
+    make dist
+    make all
+    make install
+
+  will make and install this package.  
+
+
+At the moment, doing a 
+
+    make 
+
+  or
+
+    make all
+
+  will fail with an unreasonably cryptic error message when run on a
+  fresh checkout from the Git repo, or a freshly cleaned directory
+  tree.  The hack that causes bug this will be going away soon, and so
+  I have not fixed it.  The work around for this, for now, is to do
+
+    make dist
+
+  before you do the
+
+    make all
+
+  which is why I have the seemingly extranious "make dist" above.
+

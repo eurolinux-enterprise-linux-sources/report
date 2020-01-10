@@ -1,0 +1,480 @@
+# Copyright (C) YEAR Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Yuri Chornoivan <yurchor@ukr.net>, 2010.
+msgid ""
+msgstr ""
+"Project-Id-Version: report 0.10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-06-30 12:06-0400\n"
+"PO-Revision-Date: 2010-06-20 08:55+0300\n"
+"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
+"Language-Team: Ukrainian <translation@linux.org.ua>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 1.1\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: python/bin/report:91
+msgid "Needs a filename."
+msgstr "Слід вказати назву файла."
+
+#: python/bin/report:93
+msgid "Please specify only 1 filename."
+msgstr "Будь ласка, вкажіть лише 1 назву файла."
+
+#: python/bin/report:97
+#, python-format
+msgid "File %s does not exist."
+msgstr "Файла %s не існує."
+
+#: python/bin/report:100
+msgid "--gtk option specified, but report.io.GTKIO package not found."
+msgstr "Вказано параметр --gtk, але пакунка report.io.GTKIO не виявлено."
+
+#: python/report/__init__.py:234 python/report/__init__.py:244
+#: python/report/__init__.py:252 python/report/__init__.py:261
+#: python/report/__init__.py:268 python/report/__init__.py:275
+#: python/report/__init__.py:302 python/report/__init__.py:311
+#: python/report/__init__.py:327 python/report/__init__.py:335
+#: python/report/__init__.py:342 python/report/__init__.py:354
+#: python/report/__init__.py:365
+msgid "Signature File Format Error"
+msgstr "Помилка у форматі файла підпису"
+
+#: python/report/__init__.py:235
+#, python-format
+msgid "file %s is a tarfile that does not contain a member named 'context.xml'"
+msgstr ""
+"файл %s є файлом архіву tar, який не містить елемента з назвою «context.xml»"
+
+#: python/report/__init__.py:245
+#, python-format
+msgid "Failed to open file %(filename)s: %(error)s"
+msgstr "Не вдалося відкрити файл %(filename)s: %(error)s"
+
+#: python/report/__init__.py:253
+#, python-format
+msgid "Failed to open file %s"
+msgstr "Не вдалося відкрити файл %s"
+
+#: python/report/__init__.py:262
+#, python-format
+msgid "Error while parseing: %(filename)s: %(error)s"
+msgstr "Помилка під час обробки: %(filename)s: %(error)s"
+
+#: python/report/__init__.py:269
+#, python-format
+msgid "Could not parse XML file %s"
+msgstr "Не вдалося обробити файл XML %s"
+
+#: python/report/__init__.py:276
+#, python-format
+msgid "file %(filename)s has document tag that is not valid: %(signature)s"
+msgstr "файл %(filename)s містить некоректний теґ документа: %(signature)s"
+
+#: python/report/__init__.py:303
+#, python-format
+msgid ""
+"file %(filename)s has document element that has children with an invalid "
+"tag: %(tag)s"
+msgstr ""
+"файл %(filename)s містить елемент документа з дочірнім елементом з "
+"некоректним теґом: %(tag)s"
+
+#: python/report/__init__.py:312
+#, python-format
+msgid "file %s has binding element that has no 'name' attribute"
+msgstr "файл %s містить елемент зв’язку без атрибута «name»"
+
+#: python/report/__init__.py:328
+#, python-format
+msgid "file %s has a binding with an 'href' but no content"
+msgstr "файл %s пов’язано з «href» без вмісту"
+
+#: python/report/__init__.py:336 python/report/__init__.py:343
+#, python-format
+msgid ""
+"file %(filename)s is a tarfile that does not contain a member named '%"
+"(member)s'"
+msgstr ""
+"файл %(filename)s є файлом архіву tar, який не містить елемента з назвою «%"
+"(member)s»"
+
+#: python/report/__init__.py:355
+#, python-format
+msgid ""
+"file %(filename)s has a binding, %(binding)s, that has both a 'value' "
+"attribute, and a text child"
+msgstr ""
+"у файлі %(filename)s міститься прив’язка %(binding)s, для якої визначено "
+"одночасно атрибут «value» і дочірній текстовий об’єкт"
+
+#: python/report/__init__.py:366
+#, python-format
+msgid ""
+"file %(filename)s has a binding, %(binding)s, that has neither a 'value' "
+"attribute, or a text child"
+msgstr ""
+"у файлі %(filename)s міститься прив’язка %(binding)s, для якої не визначено "
+"ні атрибута «value», ні дочірнього текстового об’єкта"
+
+#: python/report/__init__.py:458
+msgid "No Such Plugin"
+msgstr "Такого додатка не виявлено"
+
+#: python/report/__init__.py:459
+#, python-format
+msgid "No plugin matching the requested: %s."
+msgstr "Не виявлено додатка, що відповідає запиту: %s."
+
+#: python/report/__init__.py:463
+msgid "Where do you want to send this report:"
+msgstr "Призначення звіту:"
+
+#: python/report/__init__.py:467
+msgid "No Plugins"
+msgstr "Немає додатків"
+
+#: python/report/__init__.py:468
+msgid "No usable plugins."
+msgstr "Немає придатних додатків."
+
+#: python/report/__init__.py:473
+msgid "No IO specified."
+msgstr "Не вказано параметри вводу-виводу."
+
+#: python/report/__init__.py:474
+msgid "Cannot determine IO."
+msgstr "Не вдалося визначити ввід-вивід."
+
+#: python/report/plugins/scp/__init__.py:45
+#: python/report/plugins/strata/__init__.py:61
+#: python/report/plugins/localsave/__init__.py:43
+#: python/report/plugins/ftp/__init__.py:44
+#: python/report/plugins/bugzilla/__init__.py:64
+msgid "No IO"
+msgstr "Немає вводу-виводу"
+
+#: python/report/plugins/scp/__init__.py:46
+#: python/report/plugins/strata/__init__.py:62
+#: python/report/plugins/localsave/__init__.py:44
+#: python/report/plugins/ftp/__init__.py:45
+#: python/report/plugins/bugzilla/__init__.py:65
+msgid "No io provided."
+msgstr "Не вказано вводу-виводу."
+
+#: python/report/plugins/scp/__init__.py:94
+msgid "No Host"
+msgstr "Немає вузла"
+
+#: python/report/plugins/scp/__init__.py:95
+msgid "Please provide a valid hostname"
+msgstr "Будь ласка, вкажіть коректну назву вузла"
+
+#: python/report/plugins/scp/__init__.py:118
+msgid "Login Input Failed"
+msgstr "Помилка введення реєстраційних даних"
+
+#: python/report/plugins/scp/__init__.py:119
+msgid "Please provide a valid username and password"
+msgstr "Будь ласка, вкажіть коректне ім’я користувача і пароль"
+
+#: python/report/plugins/scp/__init__.py:129
+msgid "No Path"
+msgstr "Немає шляху"
+
+#: python/report/plugins/scp/__init__.py:130
+msgid "Please provide a path"
+msgstr "Будь ласка, вкажіть шлях"
+
+#: python/report/plugins/scp/__init__.py:151
+#: python/report/plugins/scp/__init__.py:165
+msgid "scp failed"
+msgstr "Помилка безпечного копіювання"
+
+#: python/report/plugins/scp/__init__.py:152
+#, python-format
+msgid "OSError during scp file from %(filename)s to %(target)s: %(error)s"
+msgstr ""
+"Помилка операційної системи під час безпечного копіювання файла з %(filename)"
+"s до %(target)s: %(error)s"
+
+#: python/report/plugins/scp/__init__.py:160
+msgid "scp Successful"
+msgstr "Успішне безпечне копіювання"
+
+#: python/report/plugins/scp/__init__.py:161
+#: python/report/plugins/localsave/__init__.py:107
+msgid "The signature was successfully copied to:"
+msgstr "Підпис було успішно скопійовано до:"
+
+#: python/report/plugins/scp/__init__.py:166
+#, python-format
+msgid ""
+"unexpected child status (%(childstatus)s) during scp\n"
+"scp %(filename)s %(target)s\n"
+"%(childoutput)s"
+msgstr ""
+"помилковий стан дочірнього об’єкта (%(childstatus)s) під час безпечного\n"
+"копіювання %(filename)s до %(target)s\n"
+"%(childoutput)s"
+
+#: python/report/plugins/strata/__init__.py:106
+#: python/report/plugins/bugzilla/__init__.py:235
+msgid "Create Case"
+msgstr "Створити запис випадку"
+
+#: python/report/plugins/strata/__init__.py:106
+#: python/report/plugins/bugzilla/__init__.py:236
+msgid "Create a Case"
+msgstr "Створити запис випадку"
+
+#: python/report/plugins/strata/__init__.py:107
+#: python/report/plugins/bugzilla/__init__.py:238
+#: python/report/plugins/bugzilla/__init__.py:239
+msgid "Attach to existing case"
+msgstr "Долучити до поточного випадку"
+
+#: python/report/plugins/strata/__init__.py:110
+#: python/report/plugins/bugzilla/__init__.py:244
+msgid "Create new case or Attach report to existing case?"
+msgstr "Створити новий випадок чи долучити звіт до поточного випадку?"
+
+#: python/report/plugins/strata/__init__.py:124
+msgid "Missing Login Information"
+msgstr "Не вказано реєстраційних даних"
+
+#: python/report/plugins/strata/__init__.py:125
+#: python/report/plugins/bugzilla/__init__.py:172
+msgid "Please provide a valid username and password."
+msgstr "Будь ласка, вкажіть коректне ім’я користувача і пароль."
+
+#: python/report/plugins/strata/__init__.py:149
+msgid "Case Creation Failed"
+msgstr "Спроба створення випадку завершилася невдало"
+
+#: python/report/plugins/strata/__init__.py:152
+msgid "Case Creation Response"
+msgstr "Відповідь на запит щодо створення запису випадку"
+
+#: python/report/plugins/strata/__init__.py:153
+#, fuzzy
+msgid "Case Creation Succeeded"
+msgstr "Успішна спроба створення випадку"
+
+#: python/report/plugins/strata/__init__.py:172
+msgid "Report Attachement Failed"
+msgstr "Спроба долучення звіту завершилася невдало"
+
+#: python/report/plugins/strata/__init__.py:175
+msgid "Report Attachment Response"
+msgstr "Відповідь з долученням звіту"
+
+#: python/report/plugins/strata/__init__.py:176
+msgid "Report Attachment Succeded"
+msgstr "Успішна спроба долучення звіту"
+
+#: python/report/plugins/localsave/__init__.py:63
+msgid "directory to store report in"
+msgstr "каталог, у якому слід зберегти звіт"
+
+#: python/report/plugins/localsave/__init__.py:67
+#: python/report/plugins/localsave/__init__.py:74
+#: python/report/plugins/localsave/__init__.py:92
+#: python/report/plugins/localsave/__init__.py:102
+msgid "local save Failed"
+msgstr "Помилка під час збереження локальних даних"
+
+#: python/report/plugins/localsave/__init__.py:68
+msgid "directory name required"
+msgstr "слід вказати назву каталогу"
+
+#: python/report/plugins/localsave/__init__.py:75
+#, python-format
+msgid "'%s' already exists, but is not a directory"
+msgstr "файл з назвою «%s» вже існує, він не є каталогом"
+
+#: python/report/plugins/localsave/__init__.py:78
+#, python-format
+msgid "'%s' does not exist, create it?"
+msgstr "«%s» не існує, створити?"
+
+#: python/report/plugins/localsave/__init__.py:79
+msgid "OK"
+msgstr "Гаразд"
+
+#: python/report/plugins/localsave/__init__.py:80
+msgid "Create the directory"
+msgstr "Створити каталог"
+
+#: python/report/plugins/localsave/__init__.py:82
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: python/report/plugins/localsave/__init__.py:83
+msgid "Cancel the local save"
+msgstr "Скасувати збереження локальних даних"
+
+#: python/report/plugins/localsave/__init__.py:93
+#, python-format
+msgid "could not create '%(dir)s': %(error)s"
+msgstr "не вдалося створити «%(dir)s»: %(error)s"
+
+#: python/report/plugins/localsave/__init__.py:103
+#, python-format
+msgid "could not save report to '%(target)s': %(error)s"
+msgstr "не вдалося зберегти звіт до «%(target)s»': %(error)s"
+
+#: python/report/plugins/localsave/__init__.py:106
+msgid "local save Successful"
+msgstr "Локальні дані успішно збережено"
+
+#: python/report/plugins/ftp/__init__.py:67
+msgid "Enter remote FTP directory as URL"
+msgstr "Введіть адресу віддаленого каталогу FTP"
+
+#: python/report/plugins/ftp/__init__.py:99
+msgid "Upload failed"
+msgstr "Невдала спроба вивантаження"
+
+#: python/report/plugins/ftp/__init__.py:100
+#, python-format
+msgid "Upload has failed for remote path: %(ftpserver)s, %(error)s"
+msgstr ""
+"Не вдалося вивантажити дані за віддаленою адресою: %(ftpserver)s, %(error)s"
+
+#: python/report/plugins/ftp/__init__.py:103
+msgid "Upload Successful"
+msgstr "Успішне вивантаження"
+
+#: python/report/plugins/ftp/__init__.py:104
+msgid "The signature was successfully uploaded to:"
+msgstr "Підпис було успішно вивантажено до:"
+
+#: python/report/plugins/bugzilla/__init__.py:128
+#, python-format
+msgid ""
+"Your bug could not be filed due to the following error when communicating "
+"with bugzilla:\n"
+"\n"
+"%s"
+msgstr ""
+"Не вдалося додати ваш звіт про ваду через наведену нижче помилку обміну "
+"даними з bugzilla:\n"
+"\n"
+"%s"
+
+#: python/report/plugins/bugzilla/__init__.py:130
+#: python/report/plugins/bugzilla/__init__.py:137
+msgid "Unable To File Bug"
+msgstr "Не вдалося створити звіт"
+
+#: python/report/plugins/bugzilla/__init__.py:134
+#, python-format
+msgid ""
+"Your bug could not be filed due to bad information in the bug fields.  This "
+"is most likely an error in the bug filing program:\n"
+"\n"
+"%s"
+msgstr ""
+"Не вдалося додати ваш звіт про ваду через помилкові дані у полях параметрів "
+"вади. Ймовірно, причиною є помилка у програми для створення звітів про "
+"вади:\n"
+"\n"
+"%s"
+
+#: python/report/plugins/bugzilla/__init__.py:157
+msgid "Bug Filing Not Supported"
+msgstr "Створення звітів про вади не підтримується"
+
+#: python/report/plugins/bugzilla/__init__.py:158
+msgid ""
+"Your distribution does not provide a supported bug filing system, so you "
+"cannot save your exception this way."
+msgstr ""
+"У вашому дистрибутиві не передбачено підтримуваної системи стеження за "
+"вадами, отже вам не вдасться створити звіт за допомогою цієї програми."
+
+#: python/report/plugins/bugzilla/__init__.py:171
+msgid "No Login Information"
+msgstr "Не вказано реєстраційних даних"
+
+#: python/report/plugins/bugzilla/__init__.py:179
+msgid "Unable To Login"
+msgstr "Не вдалося увійти"
+
+#: python/report/plugins/bugzilla/__init__.py:180
+#, python-format
+msgid ""
+"There was an error logging into %s using the provided username and password."
+msgstr ""
+"Під час спроби увійти до %s за допомогою вказаного імені користувача і "
+"пароля сталася помилка."
+
+#: python/report/plugins/bugzilla/__init__.py:206
+#: python/report/plugins/bugzilla/__init__.py:282
+msgid "Bug not found"
+msgstr "Вади не знайдено"
+
+#: python/report/plugins/bugzilla/__init__.py:207
+#: python/report/plugins/bugzilla/__init__.py:283
+#, python-format
+msgid "Unable to find bug %s"
+msgstr "Не вдалося знайти ваду %s"
+
+#: python/report/plugins/bugzilla/__init__.py:331
+msgid "Bug Created"
+msgstr "Створено звіт про ваду"
+
+#: python/report/plugins/bugzilla/__init__.py:332
+msgid ""
+"A new bug has been created with your traceback attached. Please add "
+"additional information such as what you were doing when you encountered the "
+"bug, screenshots, and whatever else is appropriate to the following bug:"
+msgstr ""
+"Створено звіт про ваду з зібраними у вашій системі даними щодо зворотного "
+"трасування. Будь ласка, додайте інші відомості, зокрема щодо дій, які "
+"виконувалися у системі під час аварії, знімки вікон або будь-які інші дані, "
+"що стосуються цієї вади:"
+
+#: python/report/plugins/bugzilla/__init__.py:359
+msgid "Bug Updated"
+msgstr "Оновлено звіт про ваду"
+
+#: python/report/plugins/bugzilla/__init__.py:360
+msgid ""
+"A bug with your information already exists.  Your account has been added to "
+"the CC list and your traceback added as a comment.  Please add additional "
+"descriptive information to the following bug:"
+msgstr ""
+"Повідомлення про ваду з наведеними вами даними вже створено. Ваш обліковий "
+"запис було додано до списку надсилання копій нових повідомлень звіту, а "
+"зібрані у вашій системі дані зворотного трасування додано як коментар. Будь "
+"ласка, додайте інші описові дані до цього звіту про ваду:"
+
+#~ msgid "Upload Failed."
+#~ msgstr "Невдала спроба вивантаження."
+
+#~ msgid "Error connecting to FTP server: %(netloc)s"
+#~ msgstr "Помилка під час встановлення з’єднання з сервером FTP: %(netloc)s"
+
+#~ msgid "Signature Submission Failed"
+#~ msgstr "Спроба надсилання підпису завершилася невдало"
+
+#~ msgid "Signature Submission Response"
+#~ msgstr "Відповідь на подання підпису"
+
+#~ msgid "attach"
+#~ msgstr "долучити"
+
+#~ msgid "new"
+#~ msgstr "створити"
+
+#~ msgid "Do not create Case"
+#~ msgstr "Не створювати запис випадку"
+
+#~ msgid "Would you like to create a case?"
+#~ msgstr "Бажаєте створити запис випадку?"

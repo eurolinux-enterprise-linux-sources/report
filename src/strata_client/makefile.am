@@ -1,0 +1,21 @@
+
+include_HEADERS = strata_client.h
+
+lib_LTLIBRARIES = libstrata_client.la
+
+libstrata_client_la_SOURCES = strata_client_lib.c strata_client.h
+libstrata_client_la_CFLAGS = $$(curl-config --cflags) $$(xml2-config --cflags) -DFORTIFY_SOURCE=2
+libstrata_client_la_LDFLAGS = $$(curl-config --libs) $$(xml2-config --libs)
+
+
+noinst_PROGRAMS = c_strata_client_test c_strata_client_error
+
+c_strata_client_test_SOURCES = c_strata_client_test.c strata_client.h
+c_strata_client_test_LDADD = libstrata_client.la
+
+c_strata_client_error_SOURCES = c_strata_client_error.c strata_client.h
+c_strata_client_error_LDADD = libstrata_client.la
+
+dist_noinst_SCRIPTS = attachFile createCase getAttachment getCase getSignature listAttachments listCases listSignatures postSignature showOutfile
+
+dist_noinst_DATA = dummy_signature.xml sealert-report.xml slightly_bad_signature.xml sealert-error-signature.xml sealert-error-mixed.xml 

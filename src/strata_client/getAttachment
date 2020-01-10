@@ -1,0 +1,25 @@
+STRATAHOST=support-services-devel.gss.redhat.com:8080
+
+headerfile=/tmp/strata-headers-$$
+outfile=/tmp/strata-output-$$
+
+curl --silent --show-error -X GET http://${STRATAHOST}/Strata/cases/$1/attachments/$2 -D $headerfile >${outfile}
+
+location=$(grep "^Location:" $headerfile)
+strata_message=$(grep "^Strata-Message:" $headerfile)
+
+rm_headerfile=true
+if [ -n "$location" ]; then
+  echo $location
+fi
+
+if [ -n "$strata_message" ]; then
+   echo "$strata_message"
+   rm_headerfile=false
+fi
+
+if "$rm_headerfile"; then
+  rm -rf $headerfile
+fi
+
+./showOutfile ${outfile}

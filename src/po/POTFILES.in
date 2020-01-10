@@ -1,0 +1,8 @@
+# List of source files which contain translatable strings.
+python/bin/report
+python/report/__init__.py
+python/report/plugins/scp/__init__.py
+python/report/plugins/strata/__init__.py
+python/report/plugins/localsave/__init__.py
+python/report/plugins/ftp/__init__.py
+python/report/plugins/bugzilla/__init__.py

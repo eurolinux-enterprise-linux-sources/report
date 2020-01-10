@@ -1,0 +1,144 @@
+
+First Milestone:
+
+  Make sure the following things work:
+
+    Programs using the report library:
+
+        anaconda and firstboot both call the report library when
+          they detect a crash or other internal error
+
+        setroubleshoot calls the report library when it detects a
+          problem in the SELinux configuration
+
+      The report program itself is a command line that can take an
+        arbitrary file and wrap it into a report and deliver it
+        somewhere using the report library.  It can also take a report
+        or signature stored on disk and deliver it somewhere using the
+        report library.
+
+      While each of these programs call the report library with
+        different data, the behavor of the report library once called
+        is largely the same.
+
+
+    The report program:
+ 
+      The purpose of the report command is to invoke some functionality of 
+        the report library from the command line:
+
+        report --file=<filename>
+
+           Package the file <filename> into a report, and call the
+           report library useing the I/O available in the existing
+           environment.
+
+        report --report=<filename> 
+
+           Extract a report from the file <filename> (which must be a
+           saved report or signature) and call the report library
+           useing the I/O available in the existing environment.
+
+        In addtion to the above the following options will be supported
+
+          --plugin=<configuration-label>
+
+              Skip the destiation query, use the destination named by
+              the <configuration-label>.
+
+          --<XXX>=<YYY>
+
+              For any query who's label is <XXX>, use <YYY> as the
+              answer.
+
+
+    Within the report library:
+
+      The main data structure implemented by the report library is a
+        'report'.  A report can be stripped down to a 'signature'.
+        Reports produced by anaconda, firstboot, setroubleshoot, and
+        the report command all have a primary member.
+
+      With the default configuration, once called, the report library
+        will ask the user which of places he want to deliver the report.
+
+        localsave - by default, save the primary member to a local file
+          (queried from the user), save the signature if it has no
+          primary member.  The localsave plugin can be configured to always
+          save the full report to a file, or the full signature to a file.
+
+        scp - Like localsave in all respects except that the file is 
+          scp'ed to a (queried) remote host and (queried) pathname using a 
+          (queried) username and password.
+
+        ftp - Like localsave in all respects except that the file is 
+          ftp'ed to a (queried) remote host and (queried) pathname using a 
+          (queried) username and password.
+
+        bugzilla - send the report to a bugzilla.  Details within the 
+          bugzilla plugin.  In general, for the above mentioned programs,
+          that already had a report-to-bugzilla functionality, the 
+          bz's created or cc'd by this plugin will be the same as 
+          the bz's created or cc'd by that original report-to-bugzilla
+          functionality.
+
+        RHEL - send the report to Red Hat support.  Details within
+          the RHEL plugin itself.  While the transfer and storage details
+          are different, the data delivered by the RHEL plugin will 
+          be the same data as delivered by the bugzilla plugin for those
+          programs that have previously had report-to-bugzilla functionality.
+
+      It is possible to configure the report library:
+
+        For each of the above destinations, it is possible to remove 
+          that location from the list of queried locations.  Also for
+          each of the above locations it is possible to configure fixed
+          answers to any of the questions asked by that destination.
+          It is also possible to create multiple configurations of each
+          destination with different fixed answers to each question.
+
+        It is possible to configure the library to a have a fixed answer
+          to the destination query (so it is not asked).
+
+        It is also possible to configure the library to send the report
+          to a fixed destination, with fixed answers to all querys, for
+          the case that the user can not do I/O, or does not want to.
+
+     The report library is called with an data structure representing
+        the I/O environment of the calling program.  The implemented
+        I/O environments available in this milestone are GTK, Newt,
+        and text I/O, and finally an environment that represents no
+        input, and only logfile output.
+
+     The report library can be optionally called with an arbitrary set of 
+       XXX=YYY pairs.  For any query who's label is XXX, the value YYY 
+       will be used instead of using the value from the configuration, or 
+       querying the user for the value.           
+
+Future Milestones:
+- add no-io option
+- clean up account manager
+- simplify the interface into report - 
+    the signature sub-part of a signature 
+      - for setroubleshoot sendToBugzilla doens't attach a new sealert 
+        signature for each new report - I think this is because the hash 
+        value is based on the complete sealert signature.
+      - for python-meh (python crashes) sendToBugzilla attaches each
+        new signature (traceback) to the bugzilla - I think this is because
+        the hash value is only based on a subset of the signature (traceback)
+- is there a way to alter how we load templates and alternatives so that
+  say, a template named 'bugzilla', does not hide the standard 'bugzilla'
+  module?
+- can we simplify the loading of templates and alternatives, perhaps they
+  do not need to be modules themselves?
+- improvements to IO?
+   - move IO module out of report module?
+   - add the ability to create dialog boxes of multiple querys?
+   - add the ability to 'configure' answers - either as defaults, and/or
+        as a fixed (user doesn't get asked) answer to the question.
+- The C/C++ rewrite:
+  - build a plugin system for C/C++
+  - build a linkage from Python to C++
+  - find/build an ini file parser
+
+

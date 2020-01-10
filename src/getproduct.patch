@@ -1,0 +1,20 @@
+diff -up python-bugzilla-0.5.1/bugzilla/rhbugzilla.py.getproduct python-bugzilla-0.5.1/bugzilla/rhbugzilla.py
+--- python-bugzilla-0.5.1/bugzilla/rhbugzilla.py.getproduct	2009-04-14 11:16:10.000000000 -0400
++++ python-bugzilla-0.5.1/bugzilla/rhbugzilla.py	2010-01-15 20:15:48.000000000 -0500
+@@ -531,3 +531,16 @@ class RHBugzilla3(Bugzilla34, RHBugzilla
+             elif action == 'append':
+                 update[which] = wb+' '+text
+         self._update_bug(id,update)
++
++    def _getproducts(self):
++        '''Backend _getproducts method for RH Bugzilla. This predates the
++        Bugzilla3 Products stuff, so we need to massage this data to make it
++        fit the proper format'''
++        r = self._proxy.bugzilla.getProdInfo()
++        n = 0
++        prod = []
++        for name,desc in r.iteritems(): 
++                # We're making up a fake id, since RHBugzilla doesn't use them
++            prod.append({'id':n,'name':name,'description':desc})
++            n += 1
++        return prod

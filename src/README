@@ -1,0 +1,222 @@
+
+The purpose of report is to provide a single configurable problem/bug/issue 
+reporting API.
+
+The idea is to separate the task of gathering diagnosic information,
+from the task of sending/reporting that data to some plugable and
+configurable place.  Programs that gather general diagnostic data,
+like sos, or ABRT, or bugbuddy, and programs which gather their own
+internal diagnostic data, like Anaconda and sealert, are not tied to
+reporting that data to a single place.  They are not tied into
+reporting the problem to only one bug-tracking system, or only into a
+Bugzilla bug tracking system.  Instead they call into a single general
+purpose API which can forward the diagnostic data to any (plugable)
+appropriate (configurable) place for that user, and distro, and
+program.
+
+We have already developed several general purpose plugins: bugzilla,
+anon-ftp, scp, and localsave.  And it is not difficult to add new
+plugins for other case management or bug tracking systems following
+the pattern of the existing plugins.
+
+The user can configure the library send all reports to a particular
+place, or have the library ask each time where each report should be
+sent.  All reports can be sent to a local directory, or a directory on
+another machine, and then scanned later for which ones should be
+forwarded on to an upstream case management or bug tracking system.
+
+The report library can also be used simply to 'attach' individual
+diagnostic files to existing bugs/issues in a case management or bug
+tracking system.
+
+
+
+  
+Why a "report" library:
+
+  * a sufficiently generic and useful client side library/API that can 
+    be incorporated into any existing and future _upstream_ OSS projects
+
+  * python-meh too integrated into 'bugzilla' workflow
+
+  * ABRT's "Report" plugin integrated into the ABRT deamon
+
+  * The "report" library would take the best of both python-meh and
+    ABRT's "Report" plugin, and integrate them into one library that
+    serves both purposes.
+
+To do this we think it should:
+
+   * abstract away all the details about what kind of ticketing
+     system it is talking to, or even whether it's talking to a ticketing
+     system or to some other reporting/storage mechanism
+
+   * the choice of which ticketing/reporting/storage mechanism is
+     configurable both by the user and the app, and the defaults
+     can be set/changed at distro creation time
+
+   * possible to add new ticketing/reporting/storage mechanisms
+
+   * has a optional callback mechanism that allows the API to query
+     the user through the application for information that the chosen
+     mechanism needs (like username, password, whether it should
+     create a ticket, etc).   The storage mechanism reports failure
+     if it needs info from the user and no callback is provided
+
+   * usable within anaconda, base/minimal installs, GUI desktops, and
+        command line tools
+
+   * there would be multiple language bindings for this API
+
+
+Report concepts:
+
+   The Report package has both a library usable by other applications
+   to report problems.  It also has a command line program which can 
+   be used to forward saved problem reports to other report locations.
+
+   The report library has one primary entry point, also called
+     'report'.  This entry point is called with one required
+     parameter (a report or signature), and several optional
+     parameters (described below).
+
+   The report library implements several abstract data structures:
+
+      Abstractly a 'report' is a set of named values, called members.
+        Each member has a name, a string of data, a flag telling
+        whether or not the data is Text (UTF-8, or compatible) or
+        Binary (everything else), an optionally a 'file name' if the
+        data was originally obtained from a file whose name is
+        significant.  Note that the 'file name' attribute does not
+        refer to a file containing the actual data.
+
+      Abstractly a 'signature' is a 'report' where the very large
+        members (whether files or strings) over a certain size have
+        been removed.
+
+      Concretely, within a Python program, both a 'report' and a
+        'signature' are represented as a dictionary of
+        'SignatureValues'.  SignatureValues have fields which
+        represent the above abstract data.
+
+      Concretely, when a 'report' or 'signature' is sent over
+        the wire or stored on disk in the 'external format'.
+
+      The external format for a report is either an XML file, or a TAR
+        file containing an XML file, and files containing the contents
+        of some of the members of the report.  A reader of the
+        external format must be capable of reading either format, a
+        writer of the external format may choose either format, but
+        should choose the format that is most efficient for the nature
+        of the members of the report it is writing.  The external format
+        of a signature is always just the XML file, never the TAR file.
+
+     Within the XML file, the top level (document) element of a report
+        or signature has a "report" tag, in a namespace yet to be
+        determined (use "http://www.redhat.com/gss/strata" for now).
+        All tags and attributes defined here are in this same
+        namespace.  The "report" element may have any number of
+        "binding" elements as children.  Each "binding" element
+        specifies the name and value of each of the members of the
+        report/signature.  Each "binding" element must have a "name"
+        attribute.  The value of a binding must be specifed in one of
+        three ways: an "href" attribute points to an external URL in
+        the containing Tar file; a "value" attribute which directly
+        contains the value of the binding; or the value of the binding
+        is the children of the "binding" element.  Note that a value
+        provided as children may be either XML text nodes, or XML
+        elements, or a combination of both. A "binding" element may
+        have "type" attribute whose valid values are "text" or
+        "binary", if not specified, "text" is assumed.  A "binding"
+        element may have a "fileName" attribute which specifies that
+        the data originally came from a file whos name is significant.
+
+     If the external format is a Tar file must contain one tar file
+        member whos name is (exactly) "content.xml" and whos content
+        is the XML file specifed above.  "Binding" elements in that
+        XML file may refer to other members of this Tar file.
+
+
+
+  "report":  
+    Query the user for where to send/save the report?  The list of
+    possible choices is read from a configuration file.  The kinds
+    of choices that can be in the configuration file are "report to
+    bugzilla", "save using scp", "save locally".
+    Further input depends on where the user chooses to save the report.
+
+    save to bugzilla: 
+      asks for username and password
+    save using scp:
+      asks for username, password, and remote location
+    save locally:
+      asks for location
+
+    The report function takes as its first argument a report of the
+    situation (problem, bug, event, etc) to be reported.  A report
+    is a mapping from names to values.   The following names have 
+    predefined meanings, other names can be defined to represent the
+    data in other situations:
+
+      "component"
+        the OS component associated with this report
+        defaults to packageName
+
+      "packageName" 
+        the name (not version or revision) of the package 
+        associated with this report
+
+      "hashmarkername" 
+        the name to associate with the localhash
+        defaults to component
+
+      "localhash"
+        a hash value for this report
+
+      "summary"
+        a short (one line) description of the report
+
+      "description"
+        a complete description of the report
+
+      "pythonTraceback"
+        a Python Exception and traceback
+
+      "nativeTraceback"
+        a native architecture traceback
+
+   A reporter/saver kind can require certian members to exist in 
+   the report, and uses the values in a report to report or
+   save the incedent in its own way.
+
+   The Bugzilla reporter uses the following report members:
+      component or packageName (required)
+         used to fill in the bug's component
+
+      localhash and hashmarkername (required)
+         used to create a search hash in the bug's whiteboard
+
+      summary (required)
+         used to fill in the bug's summary
+
+      description (required)
+         copied into the first comment in the bug
+
+      pythonTraceback (optional)
+         attached to the bug
+
+Testing
+   If for testing purposes you want to redirect all reports sent to 
+   bugzilla.redhat.com to a component other than the component requrested
+   in the report, edit the file /etc/report.d/bugzilla.redhat.com.ini,
+   put in the line "testing_component = report".  You can change "report"
+   to be the name of the component where you want these "testing" reports
+   sent to.
+
+   If you want to test the report library as used by setroubleshoot, the 
+   following command will trigger an AVC, and then within setroubleshoot
+   you can report the issue, and the report library will be used.
+  
+      runcon -u system_u -r object_r -t httpd_t /bin/bash
+
+

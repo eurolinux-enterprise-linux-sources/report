@@ -1,0 +1,8 @@
+STRATAHOST=support-services-devel.gss.redhat.com:8080
+
+headerfile=/tmp/strata-headers-$$
+outfile=/tmp/strata-output-$$
+
+curl --silent --show-error -X POST -H'Accept: application/xml' -F "file=@$2" http://${STRATAHOST}/Strata/cases/$1/attachments -D $headerfile >${outfile}
+
+./showOutfile ${outfile} ${headerfile}

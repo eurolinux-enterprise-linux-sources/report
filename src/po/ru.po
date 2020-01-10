@@ -1,0 +1,418 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Red Hat, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ru\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-06-30 12:06-0400\n"
+"PO-Revision-Date: 2010-05-17 10:08\n"
+"Language-Team: Russian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: python/bin/report:91
+msgid "Needs a filename."
+msgstr ""
+
+#: python/bin/report:93
+msgid "Please specify only 1 filename."
+msgstr ""
+
+#: python/bin/report:97
+#, python-format
+msgid "File %s does not exist."
+msgstr ""
+
+#: python/bin/report:100
+msgid "--gtk option specified, but report.io.GTKIO package not found."
+msgstr ""
+
+#: python/report/__init__.py:234 python/report/__init__.py:244
+#: python/report/__init__.py:252 python/report/__init__.py:261
+#: python/report/__init__.py:268 python/report/__init__.py:275
+#: python/report/__init__.py:302 python/report/__init__.py:311
+#: python/report/__init__.py:327 python/report/__init__.py:335
+#: python/report/__init__.py:342 python/report/__init__.py:354
+#: python/report/__init__.py:365
+msgid "Signature File Format Error"
+msgstr ""
+
+#: python/report/__init__.py:235
+#, python-format
+msgid "file %s is a tarfile that does not contain a member named 'context.xml'"
+msgstr ""
+
+#: python/report/__init__.py:245
+#, python-format
+msgid "Failed to open file %(filename)s: %(error)s"
+msgstr ""
+
+#: python/report/__init__.py:253
+#, python-format
+msgid "Failed to open file %s"
+msgstr ""
+
+#: python/report/__init__.py:262
+#, python-format
+msgid "Error while parseing: %(filename)s: %(error)s"
+msgstr ""
+
+#: python/report/__init__.py:269
+#, python-format
+msgid "Could not parse XML file %s"
+msgstr ""
+
+#: python/report/__init__.py:276
+#, python-format
+msgid "file %(filename)s has document tag that is not valid: %(signature)s"
+msgstr ""
+
+#: python/report/__init__.py:303
+#, python-format
+msgid ""
+"file %(filename)s has document element that has children with an invalid "
+"tag: %(tag)s"
+msgstr ""
+
+#: python/report/__init__.py:312
+#, python-format
+msgid "file %s has binding element that has no 'name' attribute"
+msgstr ""
+
+#: python/report/__init__.py:328
+#, python-format
+msgid "file %s has a binding with an 'href' but no content"
+msgstr ""
+
+#: python/report/__init__.py:336 python/report/__init__.py:343
+#, python-format
+msgid ""
+"file %(filename)s is a tarfile that does not contain a member named '%"
+"(member)s'"
+msgstr ""
+
+#: python/report/__init__.py:355
+#, python-format
+msgid ""
+"file %(filename)s has a binding, %(binding)s, that has both a 'value' "
+"attribute, and a text child"
+msgstr ""
+
+#: python/report/__init__.py:366
+#, python-format
+msgid ""
+"file %(filename)s has a binding, %(binding)s, that has neither a 'value' "
+"attribute, or a text child"
+msgstr ""
+
+#: python/report/__init__.py:458
+msgid "No Such Plugin"
+msgstr ""
+
+#: python/report/__init__.py:459
+#, python-format
+msgid "No plugin matching the requested: %s."
+msgstr ""
+
+#: python/report/__init__.py:463
+msgid "Where do you want to send this report:"
+msgstr ""
+
+#: python/report/__init__.py:467
+msgid "No Plugins"
+msgstr ""
+
+#: python/report/__init__.py:468
+msgid "No usable plugins."
+msgstr ""
+
+#: python/report/__init__.py:473
+msgid "No IO specified."
+msgstr ""
+
+#: python/report/__init__.py:474
+msgid "Cannot determine IO."
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:45
+#: python/report/plugins/strata/__init__.py:61
+#: python/report/plugins/localsave/__init__.py:43
+#: python/report/plugins/ftp/__init__.py:44
+#: python/report/plugins/bugzilla/__init__.py:64
+msgid "No IO"
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:46
+#: python/report/plugins/strata/__init__.py:62
+#: python/report/plugins/localsave/__init__.py:44
+#: python/report/plugins/ftp/__init__.py:45
+#: python/report/plugins/bugzilla/__init__.py:65
+msgid "No io provided."
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:94
+msgid "No Host"
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:95
+msgid "Please provide a valid hostname"
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:118
+msgid "Login Input Failed"
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:119
+msgid "Please provide a valid username and password"
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:129
+msgid "No Path"
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:130
+msgid "Please provide a path"
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:151
+#: python/report/plugins/scp/__init__.py:165
+msgid "scp failed"
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:152
+#, python-format
+msgid "OSError during scp file from %(filename)s to %(target)s: %(error)s"
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:160
+msgid "scp Successful"
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:161
+#: python/report/plugins/localsave/__init__.py:107
+msgid "The signature was successfully copied to:"
+msgstr ""
+
+#: python/report/plugins/scp/__init__.py:166
+#, python-format
+msgid ""
+"unexpected child status (%(childstatus)s) during scp\n"
+"scp %(filename)s %(target)s\n"
+"%(childoutput)s"
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:106
+#: python/report/plugins/bugzilla/__init__.py:235
+msgid "Create Case"
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:106
+#: python/report/plugins/bugzilla/__init__.py:236
+msgid "Create a Case"
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:107
+#: python/report/plugins/bugzilla/__init__.py:238
+#: python/report/plugins/bugzilla/__init__.py:239
+msgid "Attach to existing case"
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:110
+#: python/report/plugins/bugzilla/__init__.py:244
+msgid "Create new case or Attach report to existing case?"
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:124
+msgid "Missing Login Information"
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:125
+#: python/report/plugins/bugzilla/__init__.py:172
+msgid "Please provide a valid username and password."
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:149
+msgid "Case Creation Failed"
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:152
+msgid "Case Creation Response"
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:153
+msgid "Case Creation Succeeded"
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:172
+msgid "Report Attachement Failed"
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:175
+msgid "Report Attachment Response"
+msgstr ""
+
+#: python/report/plugins/strata/__init__.py:176
+msgid "Report Attachment Succeded"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:63
+msgid "directory to store report in"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:67
+#: python/report/plugins/localsave/__init__.py:74
+#: python/report/plugins/localsave/__init__.py:92
+#: python/report/plugins/localsave/__init__.py:102
+msgid "local save Failed"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:68
+msgid "directory name required"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:75
+#, python-format
+msgid "'%s' already exists, but is not a directory"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:78
+#, python-format
+msgid "'%s' does not exist, create it?"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:79
+msgid "OK"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:80
+msgid "Create the directory"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:82
+msgid "Cancel"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:83
+msgid "Cancel the local save"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:93
+#, python-format
+msgid "could not create '%(dir)s': %(error)s"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:103
+#, python-format
+msgid "could not save report to '%(target)s': %(error)s"
+msgstr ""
+
+#: python/report/plugins/localsave/__init__.py:106
+msgid "local save Successful"
+msgstr ""
+
+#: python/report/plugins/ftp/__init__.py:67
+msgid "Enter remote FTP directory as URL"
+msgstr ""
+
+#: python/report/plugins/ftp/__init__.py:99
+msgid "Upload failed"
+msgstr ""
+
+#: python/report/plugins/ftp/__init__.py:100
+#, python-format
+msgid "Upload has failed for remote path: %(ftpserver)s, %(error)s"
+msgstr ""
+
+#: python/report/plugins/ftp/__init__.py:103
+msgid "Upload Successful"
+msgstr ""
+
+#: python/report/plugins/ftp/__init__.py:104
+msgid "The signature was successfully uploaded to:"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:128
+#, python-format
+msgid ""
+"Your bug could not be filed due to the following error when communicating "
+"with bugzilla:\n"
+"\n"
+"%s"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:130
+#: python/report/plugins/bugzilla/__init__.py:137
+msgid "Unable To File Bug"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:134
+#, python-format
+msgid ""
+"Your bug could not be filed due to bad information in the bug fields.  This "
+"is most likely an error in the bug filing program:\n"
+"\n"
+"%s"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:157
+msgid "Bug Filing Not Supported"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:158
+msgid ""
+"Your distribution does not provide a supported bug filing system, so you "
+"cannot save your exception this way."
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:171
+msgid "No Login Information"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:179
+msgid "Unable To Login"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:180
+#, python-format
+msgid ""
+"There was an error logging into %s using the provided username and password."
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:206
+#: python/report/plugins/bugzilla/__init__.py:282
+msgid "Bug not found"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:207
+#: python/report/plugins/bugzilla/__init__.py:283
+#, python-format
+msgid "Unable to find bug %s"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:331
+msgid "Bug Created"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:332
+msgid ""
+"A new bug has been created with your traceback attached. Please add "
+"additional information such as what you were doing when you encountered the "
+"bug, screenshots, and whatever else is appropriate to the following bug:"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:359
+msgid "Bug Updated"
+msgstr ""
+
+#: python/report/plugins/bugzilla/__init__.py:360
+msgid ""
+"A bug with your information already exists.  Your account has been added to "
+"the CC list and your traceback added as a comment.  Please add additional "
+"descriptive information to the following bug:"
+msgstr ""

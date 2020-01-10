@@ -1,0 +1,219 @@
+
+NAME = @PACKAGE_NAME@
+VERSION = @PACKAGE_VERSION@
+
+TARFILENAME=$(NAME)-$(VERSION).tar.gz
+
+ACLOCAL_AMFLAGS = -I m4
+
+
+SUBDIRS = python etc examples strata_client po
+DIST_SUBDIRS = python etc examples strata_client po
+
+dist_noinst_DATA = report.spec.in index.html README LICENCE getproduct.patch Makefile
+
+#
+# Maintainer Rules
+#
+push: $(TARFILENAME) $(SPECFILE)
+	scp $(TARFILENAME) $(SPECFILE) fedorahosted.org:report
+
+push-to-people: $(TARFILENAME)
+	scp README index.html $(TARFILENAME) people.redhat.com:public_html/report/
+
+POTFILES=po/report.pot po/en.po po/pl.po po/uk.po po/ru.po
+revert-pot-files:
+	git checkout -- $(POTFILES)
+
+
+# I (gavin) think these files should be cleaned up automatically, 
+#   but I don't know why they aren't, and don't know that they should
+OTHER_PO_GENERATED_FILES=ABOUT-NLS config.rpath po/Makevars.template po/Rules-quot po/boldquot.sed po/en@boldquot.header po/en@quot.header po/insert-header.sin po/quot.sed po/remove-potcdate.sin  
+
+autotools-clean: maintainer-clean
+	rm -rf makefile.in python/Makefile.in etc/Makefile.in examples/Makefile.in strata_client/makefile strata_client/makefile.in configure aclocal.m4 autoscan.log install-sh missing depcomp config.guess config.sub ltmain.sh m4 $(TARFILENAME) $(python_bugzilla_tar) $(python_bugzilla_tar_dir) $(python_bugzilla_tgtdir) $(OTHER_PO_GENERATED_FILES) 
+
+
+#
+# RPM Rules
+# 
+
+SPECFILE=$(NAME).spec
+
+## a base directory where we'll put as much temporary working stuff as we can
+WORKDIR := $(shell pwd)
+
+SRCRPMDIR = $(WORKDIR)/SRPMS
+SRCRPMDIR_MD5 = $(WORKDIR)/SRPMS_MD5
+BUILDDIR = $(WORKDIR)/BUILD
+RPMDIR = $(WORKDIR)/RPMS
+MOCKDIR = $(WORKDIR)/MOCK
+
+SOURCEDIR = $(WORKDIR)
+SPECDIR = $(WORKDIR)
+
+RPM_DEFINES = --define "_sourcedir $(SOURCEDIR)" \
+	      --define "_specdir $(SPECDIR)" \
+	      --define "_builddir $(BUILDDIR)" \
+	      --define "_srcrpmdir $(SRCRPMDIR)" \
+	      --define "_rpmdir $(RPMDIR)"
+
+# Initialize the variables that we need, but are not defined
+# the version of the package
+
+VER_REL := $(shell rpm $(RPM_DEFINES) -q --qf "%{VERSION} %{RELEASE}\n" --specfile $(SPECFILE)| head -1)
+RELEASE := $(word 2, $(VER_REL))
+
+RPM = rpmbuild
+RPM_WITH_DIRS = $(RPM) $(RPM_DEFINES)
+
+$(TARFILENAME): dist
+
+name-ver-rel:
+	@echo $(NAME)-$(VERSION)-$(RELEASE)
+
+
+srpm: $(SPECFILE) $(NAME)-$(VERSION).tar.gz
+	mkdir -p $(SRCRPMDIR) $(BUILDDIR) $(RPMDIR)
+	$(RPM_WITH_DIRS) -bs $<
+
+rpm: $(SPECFILE) $(NAME)-$(VERSION).tar.gz
+	mkdir -p $(SRCRPMDIR) $(BUILDDIR) $(RPMDIR)
+	$(RPM_WITH_DIRS) -ba $(SPECFILE) 2>&1 | tee .build-$(VERSION)-$(RELEASE).log ; exit $${PIPESTATUS[0]}
+
+rpm-rhel: $(SPECFILE) $(NAME)-$(VERSION).tar.gz
+	mkdir -p $(SRCRPMDIR) $(BUILDDIR) $(RPMDIR)
+	$(RPM_WITH_DIRS) --define "build_as_for_rhel 1" -ba $(SPECFILE) 2>&1 | tee .build-$(VERSION)-$(RELEASE).log ; exit $${PIPESTATUS[0]}
+
+rpm-rhel-strata: $(SPECFILE) $(NAME)-$(VERSION).tar.gz
+	mkdir -p $(SRCRPMDIR) $(BUILDDIR) $(RPMDIR)
+	$(RPM_WITH_DIRS) --define "build_as_for_rhel 1" --define "strata 1" -ba $(SPECFILE) 2>&1 | tee .build-$(VERSION)-$(RELEASE).log ; exit $${PIPESTATUS[0]}
+
+rpm-rhel-strata-test: $(SPECFILE) $(NAME)-$(VERSION).tar.gz
+	mkdir -p $(SRCRPMDIR) $(BUILDDIR) $(RPMDIR)
+	$(RPM_WITH_DIRS) --define "build_as_for_rhel 1" --define "strata 1" --define "strata_test 1" -ba $(SPECFILE) 2>&1 | tee .build-$(VERSION)-$(RELEASE).log ; exit $${PIPESTATUS[0]}
+
+rpm-rhel-test: $(SPECFILE) $(NAME)-$(VERSION).tar.gz
+	mkdir -p $(SRCRPMDIR) $(BUILDDIR) $(RPMDIR)
+	$(RPM_WITH_DIRS) --define "build_as_for_rhel 1" --define "build_as_for_rhel_test 1" -ba $(SPECFILE) 2>&1 | tee .build-$(VERSION)-$(RELEASE).log ; exit $${PIPESTATUS[0]}
+
+rpm-rhel-prod: $(SPECFILE) $(NAME)-$(VERSION).tar.gz
+	mkdir -p $(SRCRPMDIR) $(BUILDDIR) $(RPMDIR)
+	$(RPM_WITH_DIRS) --define "build_as_for_rhel 1" --define "build_as_for_rhel_production 1" -ba $(SPECFILE) 2>&1 | tee .build-$(VERSION)-$(RELEASE).log ; exit $${PIPESTATUS[0]}
+
+
+
+#
+# BUILD SRPMS either with or without the MD5_DEFINES
+# 
+$(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm: $(SPECFILE) $(NAME)-$(VERSION).tar.gz
+	$(RPM_WITH_DIRS) -bs $<
+
+MD5_DEFINES=--define "_srcrpmdir $(SRCRPMDIR_MD5)" --define "_source_filedigest_algorithm md5" --define "_binary_filedigest_algorithm md5"
+$(SRCRPMDIR_MD5)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm: $(SPECFILE) $(NAME)-$(VERSION).tar.gz
+	$(RPM_WITH_DIRS) $(MD5_DEFINES) -bs $<
+
+
+
+mock-fedora-rawhide-x86_64: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/fedora-rawhide-x86_64
+	mock $(MOCKARGS) -r fedora-rawhide-x86_64 --resultdir=$(MOCKDIR)/fedora-rawhide-x86_64 rebuild $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+mock-fedora-rawhide-i386: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/fedora-rawhide-i386
+	mock $(MOCKARGS) -r fedora-rawhide-i386 --resultdir=$(MOCKDIR)/fedora-rawhide-i386 rebuild $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+mock-fedora-13-x86_64: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/fedora-13-x86_64
+	mock $(MOCKARGS) -r fedora-13-x86_64 --resultdir=$(MOCKDIR)/fedora-13-x86_64 rebuild $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+mock-fedora-13-i386: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/fedora-13-i386
+	mock $(MOCKARGS) -r fedora-13-i386 --resultdir=$(MOCKDIR)/fedora-13-i386 rebuild $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+mock-fedora-12-x86_64: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/fedora-12-x86_64
+	mock $(MOCKARGS) -r fedora-12-x86_64 --resultdir=$(MOCKDIR)/fedora-12-x86_64 rebuild $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+mock-fedora-12-i386: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/fedora-12-i386
+	mock $(MOCKARGS) -r fedora-12-i386 --resultdir=$(MOCKDIR)/fedora-12-i386 rebuild $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+mock-fedora-11-x86_64: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/fedora-11-x86_64
+	mock $(MOCKARGS) -r fedora-11-x86_64 --resultdir=$(MOCKDIR)/fedora-11-x86_64 rebuild $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+mock-fedora-11-i386: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/fedora-11-i386
+	mock $(MOCKARGS) -r fedora-11-i386 --resultdir=$(MOCKDIR)/fedora-11-i386 rebuild $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+mock-epel-5-x86_64: $(SRCRPMDIR_MD5)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/epel-5-x86_64
+	mock $(MOCKARGS) -r epel-5-x86_64 --resultdir=$(MOCKDIR)/epel-5-x86_64 rebuild $(SRCRPMDIR_MD5)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+mock-epel-5-i386: $(SRCRPMDIR_MD5)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/epel-5-i386
+	mock $(MOCKARGS) -r epel-5-i386 --resultdir=$(MOCKDIR)/epel-5-i386 rebuild $(SRCRPMDIR_MD5)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+
+mock-epel-6-x86_64: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/epel-6-x86_64
+	mock $(MOCKARGS) -r epel-6-x86_64 --resultdir=$(MOCKDIR)/epel-6-x86_64 rebuild $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+mock-epel-6-i386: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rm -rf $(MOCKDIR)/epel-6-i386
+	mock $(MOCKARGS) -r epel-6-i386 --resultdir=$(MOCKDIR)/epel-6-i386 rebuild $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+
+rpm-clean: clean
+	rm -rf $(SRCRPMDIR) $(SRCRPMDIR_MD5) $(BUILDDIR) $(RPMDIR) $(MOCKDIR) .build-*.log
+
+
+
+#
+# The python-bugzilla stuff
+# 
+# For RHEL we don't want to ship python-bugzilla, because we don't want
+# to encourage RHEL users to use bugzilla.  But for RHEL Beta's we need
+# to be able to report RHEL bugs directly to bugzilla.  So for the betas
+# we still need python-bugzilla functionality.  Rather that fork the 
+# python-bugzilla code, we copy it at distribution time.
+# 
+
+
+python_bugzilla_http_dir = https://fedorahosted.org/releases/p/y/python-bugzilla
+python_bugzilla_ver = 0.5.1
+
+python_bugzilla_tar_dir = python-bugzilla-$(python_bugzilla_ver)
+python_bugzilla_tar = $(python_bugzilla_tar_dir).tar.bz2
+
+python_bugzilla_srcdir = $(python_bugzilla_tar_dir)/bugzilla
+python_bugzilla_tgtdir = python/report/plugins/RHEL-bugzilla/bugzillaCopy
+
+README: $(python_bugzilla_tgtdir)/VERSION
+
+$(python_bugzilla_tgtdir)/VERSION update-python-bugzilla:
+	rm -rf $(python_bugzilla_tar) $(python_bugzilla_tar_dir) $(python_bugzilla_tgtdir)
+	wget $(python_bugzilla_http_dir)/$(python_bugzilla_tar)
+	tar jxf $(python_bugzilla_tar)
+	patch -p1 -d $(python_bugzilla_tar_dir) <getproduct.patch
+	mkdir -p $(python_bugzilla_tgtdir)
+	cp $(python_bugzilla_srcdir)/*.py $(python_bugzilla_tgtdir)/
+	sed --in-place -e 's/bugzilla.base/base/' $(python_bugzilla_tgtdir)/*.py
+	echo $(python_bugzilla_ver) >$(python_bugzilla_tgtdir)/VERSION
+
+
+# BREW BUILD RULES
+BREWARGS=--scratch --nowait
+brew-el5-i386: $(SRCRPMDIR_MD5)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	brew build dist-5E-build $(BREWARGS) --arch-override=i686 $(SRCRPMDIR_MD5)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+brew-el5-x86_64: $(SRCRPMDIR_MD5)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	brew build dist-5E-build $(BREWARGS) --arch-override=x86_64 $(SRCRPMDIR_MD5)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+brew-el6-i386: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	brew build RHEL-6-candidate $(BREWARGS) --arch-override=i686 $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+
+brew-el6-x86_64: $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	brew build RHEL-6-candidate $(BREWARGS) --arch-override=x86_64 $(SRCRPMDIR)/$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+

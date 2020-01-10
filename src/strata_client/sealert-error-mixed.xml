@@ -1,0 +1,60 @@
+<report xmlns="http://www.redhat.com/gss/strata"><binding name="localhash">21bc3e5a0f1b07aa1221dbc63635968e3943b58b0d90361485b4df24d6bc7c57</binding><binding name="description">
+Summary:
+
+SELinux is preventing /usr/bin/runcon "transition" access on /bin/bash.
+
+Detailed Description:
+
+SELinux denied access requested by runcon. It is not expected that this access
+is required by runcon and this access may signal an intrusion attempt. It is
+also possible that the specific version or configuration of the application is
+causing it to require additional access.
+
+Allowing Access:
+
+You can generate a local policy module to allow this access - see FAQ
+(http://docs.fedoraproject.org/selinux-faq-fc5/#id2961385) Please file a bug
+report.
+
+Additional Information:
+
+Source Context                unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1
+                              023
+Target Context                system_u:object_r:httpd_t:s0-s0:c0.c1023
+Target Objects                /bin/bash [ process ]
+Source                        runcon
+Source Path                   /usr/bin/runcon
+Port                          &lt;Unknown&gt;
+Host                          (removed)
+Source RPM Packages           coreutils-7.6-9.fc12
+Target RPM Packages           bash-4.0.35-2.fc12
+Policy RPM                    selinux-policy-3.6.32-89.fc12
+Selinux Enabled               True
+Policy Type                   targeted
+Enforcing Mode                Enforcing
+Plugin Name                   catchall
+Host Name                     (removed)
+Platform                      Linux (removed)
+                              2.6.31.12-174.2.22.fc12.i686 #1 SMP Fri Feb 19
+                              19:26:06 UTC 2010 i686 i686
+Alert Count                   1
+First Seen                    Wed 03 Mar 2010 04:45:59 PM EST
+Last Seen                     Wed 03 Mar 2010 04:45:59 PM EST
+Local ID                      c6dfd0e2-62c8-4acf-8c50-10d9e6ae8b8c
+Line Numbers                  
+
+Raw Audit Messages            
+
+node=(removed) type=AVC msg=audit(1267652759.78:25075): avc:  denied  { transition } for  pid=28202 comm="runcon" path="/bin/bash" dev=dm-0 ino=15596 scontext=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 tcontext=system_u:object_r:httpd_t:s0-s0:c0.c1023 tclass=process
+
+node=(removed) type=SYSCALL msg=audit(1267652759.78:25075): arch=40000003 syscall=11 success=no exit=-13 a0=bf894567 a1=bf892430 a2=bf892438 a3=bf892430 items=0 ppid=26932 pid=28202 auid=500 uid=500 gid=500 euid=500 suid=500 fsuid=500 egid=500 sgid=500 fsgid=500 tty=pts0 ses=10 comm="runcon" exe="/usr/bin/runcon" subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=(null)
+
+
+
+Hash String generated from  catchall,runcon,unconfined_t,httpd_t,process,transition
+audit2allow suggests:
+
+#============= unconfined_t ==============
+allow unconfined_t httpd_t:process transition;</binding><binding name="component">selinux-policy</binding><binding name="hashmarkername">setroubleshoot</binding><binding name="summary">
+    SELinux is preventing /usr/bin/runcon "transition" access
+     on /bin/bash.</binding></signature>

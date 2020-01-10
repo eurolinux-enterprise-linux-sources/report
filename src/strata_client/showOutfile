@@ -1,0 +1,49 @@
+#!/bin/bash
+
+outfile=$1
+headerfile=$2
+
+if [ -n "${headerfile}" ]; then
+
+    location=$(grep "^Location:" $headerfile)
+    strata_message=$(grep "^Strata-Message:" $headerfile)
+    httpresponse=$(grep "^HTTP/" $headerfile)
+
+    rm_headerfile=true
+    if [ -z "$httpresponse" ]; then
+        echo "Error: no HTTP response header returned"
+        rm_headerfile=false
+    else
+        echo $httpresponse
+    fi    
+
+    if [ -z "$location" ]; then
+        echo "Error: no Location header returned"
+        rm_headerfile=false
+    else
+        echo $location
+    fi
+
+    if [ -n "$strata_message" ]; then
+        echo "$strata_message"
+        rm_headerfile=false
+    fi
+
+    if "$rm_headerfile"; then
+        rm -rf $headerfile
+    fi
+fi
+
+if grep --quiet "<html" ${outfile}; then
+    echo sending outfile to htmlview
+    htmlview ${outfile}
+    rm ${outfile}
+elif grep --quiet "<?xml" ${outfile}; then
+    xmllint --format ${outfile}
+    rm ${outfile}
+else
+    cat ${outfile}
+    rm ${outfile}
+fi
+
+

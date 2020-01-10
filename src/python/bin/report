@@ -1,0 +1,183 @@
+#!/usr/bin/python
+"""
+    The main entry point to the Report library.
+    Copyright (C) 2009 Red Hat, Inc
+
+    Author(s): Gavin Romig-Koch <gavin@redhat.com>
+               Adam Stokes <ajs@redhat.com>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+"""
+
+import sys
+import os
+from subprocess import Popen, PIPE
+import locale
+import report
+import report.io.TextIO
+import report.accountmanager
+from optparse import OptionParser
+
+import gettext
+_ = lambda x: gettext.ldgettext("report", x)
+
+_FoundGTKIO = False
+try:
+    import report.io.GTKIO
+    _FoundGTKIO = True
+except:
+    pass
+
+_FoundNewtIO = False
+try:
+    import report.io.NewtIO
+    _FoundNewtIO = True
+except:
+    pass
+
+Username_account_name = "bugzilla.redhat.com"
+Username_config_filename = None
+try:
+    Username_config_filename = os.environ['HOME'] + "/.report_username_for_" + Username_account_name
+except:
+    pass
+
+_description="""\
+report will deliver FILE to a TARGET.  A TARGET can be specified on
+the command line, in the [main] section of the report configuration
+files, or it will be queried.  Each TARGET is associated with a plugin
+which actually delivers the FILE.  Additional parameters needed by the
+plugin are plugin specific, and may be specified on the command line,
+in TARGET specific configuration sections, or they will be queried.
+"""
+
+def parse_options(options):
+    parser = OptionParser(usage="report [opts] FILE",
+                          description=_description)
+    parser.add_option('--target', dest='target',
+                      help='Select target', default=None)
+    parser.add_option('--ticket', dest='ticket',
+                      help='Ticket to associate FILE with', default=None)
+    parser.add_option('--host', dest='host',
+                      help='Define a host for plugin', default=None)
+    parser.add_option('--path', dest='path',
+                      help='Define path for plugin', default=None)
+
+    if _FoundGTKIO:
+        gtk_option_help = 'Use GTK for I/O'
+    else:
+        gtk_option_help = '(disabled) Use GTK for I/O'
+
+    parser.add_option('--gtk', dest='gtkio', action='store_true',
+                      help=gtk_option_help)
+
+    if _FoundNewtIO:
+        parser.add_option('--newt', dest='newtio', action='store_true')
+
+    cmdopts, cmdargs = parser.parse_args(options)
+    if len(cmdargs) < 1:
+        raise SystemExit(_('Needs a filename.'))
+    elif len(cmdargs) > 1:
+        raise SystemExit(_('Please specify only 1 filename.'))
+    else:
+        cmdopts.filename = os.path.abspath(cmdargs[0])
+        if not os.path.exists(cmdopts.filename):
+            raise SystemExit(_('File %s does not exist.') % (cmdopts.filename,))
+
+    if cmdopts.gtkio and not _FoundGTKIO:
+        raise SystemExit(_('--gtk option specified, but report.io.GTKIO package not found.'))        
+
+    return (cmdopts, cmdargs)
+
+if __name__=="__main__":
+    try:
+        accounts = None
+        # pull in locale info from environment variables
+        locale.setlocale(locale.LC_ALL,'')
+
+        # parse cmdline options
+        opts, args = parse_options(sys.argv[1:])
+        
+        if opts.gtkio:
+            if Username_config_filename \
+                    and os.path.exists(Username_config_filename):
+
+                # only create 'accounts' if config file exists
+                accounts = report.accountmanager.AccountManager()
+
+                f = open(Username_config_filename)
+                username = f.read().strip()
+                f.close()
+
+                # only add account if username is not empty
+                if username:
+                    accounts.addAccount(Username_account_name, username)
+
+                io = report.io.GTKIO.GTKIO(accounts)
+
+            else:
+                io = report.io.GTKIO.GTKIO()
+
+        elif _FoundNewtIO and opts.newtio:
+            io = report.io.NewtIO.NewtIO()
+
+        else:
+            io = report.io.TextIO.TextIO()
+        
+        if report.isSignatureFile(opts.filename):
+            signature = report.createSignatureFromFile(opts.filename, io)
+
+        else: 
+            p = Popen(["file","-L","-b", opts.filename], stdout=PIPE,stderr=PIPE)
+            out, err = p.communicate()
+            isBinary = True
+            if 'text' in out:
+                isBinary = False
+
+            signature = report.createSimpleFileSignature(opts.filename, isBinary)
+
+        if not signature:
+            exit(128)
+
+        # convert config object into dict
+        optsDict = {}
+        for k,v in vars(opts).iteritems():
+            if v and k in ('target','ticket','host','path'):
+                optsDict[k] = v
+                
+        app = report.report(signature, io, **optsDict)
+
+        if Username_config_filename and accounts and Username_account_name:
+            remember_account_name = None
+            if accounts and accounts.hasAccount(Username_account_name):
+                accountInfo = accounts.lookupAccount(Username_account_name)
+                if accountInfo.remember_me:
+                    remember_account_name = accountInfo.username
+
+
+            if remember_account_name != None:
+                f = open(Username_config_filename,"w")
+                f.write(accountInfo.username)
+                f.close()
+            else:
+                Popen(["rm", "-rf", Username_config_filename])
+
+        exit(0)
+
+    except KeyboardInterrupt:
+        exit(130)
+                
+
+# vim:ts=4 sw=4 et

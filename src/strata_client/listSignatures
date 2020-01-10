@@ -1,0 +1,9 @@
+STRATAHOST=support-services-devel.gss.redhat.com:8080
+
+outfile=/tmp/strata-output-$$
+
+curl --silent --show-error -X GET -H'Accept: application/xml' http://${STRATAHOST}/Strata/signatures?detail=true >${outfile}
+
+./showOutfile ${outfile} ""
+
+
